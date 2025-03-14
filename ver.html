@@ -4,33 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ubicaciones en Tiempo Real</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 </head>
 <body>
     <h2>Ubicaciones en Tiempo Real</h2>
     <ul id="lista"></ul>
 
-    <script>
-        // 🔹 Configuración de Firebase (Asegúrate de que los datos son correctos)
+    <!-- 🔹 Se debe usar `type="module"` para Firebase 9 -->
+    <script type="module">
+        // 🔹 Importar Firebase correctamente (Firebase 9)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // 🔹 Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBbjHMxaekPinCF54GDfZVhl0u06HKMwZg",
             authDomain: "ubicacionentiemporeal-5ef91.firebaseapp.com",
             databaseURL: "https://ubicacionentiemporeal-5ef91-default-rtdb.firebaseio.com",
             projectId: "ubicacionentiemporeal-5ef91",
-            storageBucket: "ubicacionentiemporeal-5ef91.appspot.com",
+            storageBucket: "ubicacionentiemporeal.appspot.com",
             messagingSenderId: "192513444557",
             appId: "1:192513444557:web:01cae9b1e8c24ca5a23784",
             measurementId: "G-RK2KEYN38N"
         };
 
-        // 🔹 Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        // 🔹 Inicializar Firebase correctamente
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // 🔹 Referencia a la base de datos
+        const dbRef = ref(db, "ubicaciones");
 
         // 🔹 Leer ubicaciones en tiempo real
-        const dbRef = db.ref("ubicaciones");
-        dbRef.on("value", (snapshot) => {
+        onValue(dbRef, (snapshot) => {
             const lista = document.getElementById("lista");
             lista.innerHTML = ""; // Limpiar lista antes de actualizar
 
