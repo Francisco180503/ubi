@@ -12,32 +12,36 @@
     <ul id="lista"></ul>
 
     <script>
-        // Configuración de Firebase (Reemplaza con tus credenciales)
+        // 🔹 Configuración de Firebase (Asegúrate de que los datos son correctos)
         const firebaseConfig = {
             apiKey: "AIzaSyBbjHMxaekPinCF54GDfZVhl0u06HKMwZg",
             authDomain: "ubicacionentiemporeal-5ef91.firebaseapp.com",
+            databaseURL: "https://ubicacionentiemporeal-5ef91-default-rtdb.firebaseio.com",
             projectId: "ubicacionentiemporeal-5ef91",
-            storageBucket: "ubicacionentiemporeal-5ef91.firebasestorage.app",
+            storageBucket: "ubicacionentiemporeal-5ef91.appspot.com",
             messagingSenderId: "192513444557",
             appId: "1:192513444557:web:01cae9b1e8c24ca5a23784",
             measurementId: "G-RK2KEYN38N"
         };
 
+        // 🔹 Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        db.ref("ubicaciones").on("value", (snapshot) => {
+        // 🔹 Leer ubicaciones en tiempo real
+        const dbRef = db.ref("ubicaciones");
+        dbRef.on("value", (snapshot) => {
             const lista = document.getElementById("lista");
-            lista.innerHTML = ""; // Limpiar lista
+            lista.innerHTML = ""; // Limpiar lista antes de actualizar
 
             snapshot.forEach((child) => {
                 let data = child.val();
                 let lat = data.latitud;
                 let lon = data.longitud;
                 let enlace = `https://www.google.com/maps?q=${lat},${lon}`;
-                
+
                 let item = document.createElement("li");
-                item.innerHTML = `Latitud: ${lat}, Longitud: ${lon} - <a href="${enlace}" target="_blank">Ver en Google Maps</a>`;
+                item.innerHTML = `📍 Lat: ${lat}, Lon: ${lon} - <a href="${enlace}" target="_blank">Ver en Google Maps</a>`;
                 lista.appendChild(item);
             });
         });
