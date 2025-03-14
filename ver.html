@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubicaciones en Tiempo Real</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+</head>
+<body>
+    <h2>Ubicaciones en Tiempo Real</h2>
+    <ul id="lista"></ul>
+
+    <script>
+        // Configuración de Firebase (Reemplaza con tus credenciales)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbjHMxaekPinCF54GDfZVhl0u06HKMwZg",
+            authDomain: "ubicacionentiemporeal-5ef91.firebaseapp.com",
+            projectId: "ubicacionentiemporeal-5ef91",
+            storageBucket: "ubicacionentiemporeal-5ef91.firebasestorage.app",
+            messagingSenderId: "192513444557",
+            appId: "1:192513444557:web:01cae9b1e8c24ca5a23784",
+            measurementId: "G-RK2KEYN38N"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref("ubicaciones").on("value", (snapshot) => {
+            const lista = document.getElementById("lista");
+            lista.innerHTML = ""; // Limpiar lista
+
+            snapshot.forEach((child) => {
+                let data = child.val();
+                let lat = data.latitud;
+                let lon = data.longitud;
+                let enlace = `https://www.google.com/maps?q=${lat},${lon}`;
+                
+                let item = document.createElement("li");
+                item.innerHTML = `Latitud: ${lat}, Longitud: ${lon} - <a href="${enlace}" target="_blank">Ver en Google Maps</a>`;
+                lista.appendChild(item);
+            });
+        });
+    </script>
+</body>
+</html>
